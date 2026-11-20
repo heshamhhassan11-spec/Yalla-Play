@@ -1,0 +1,842 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user game profile, coin wallet, and permanent basic room reference",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "avatar": {
+          "type": "string",
+          "enum": ["falcon", "panda", "fox", "cat", "astronaut", "knight", "chef", "wizard"]
+        },
+        "bio": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 100
+        },
+        "coins": {
+          "type": "number"
+        },
+        "wins": {
+          "type": "number"
+        },
+        "gamesPlayed": {
+          "type": "number"
+        },
+        "basicRoomId": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "username": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "bannedUntilMs": {
+          "type": "number"
+        },
+        "privacyHideOnline": {
+          "type": "boolean"
+        },
+        "privacyHideRoom": {
+          "type": "boolean"
+        },
+        "privacyBlockFriendRequests": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "name", "avatar", "bio", "coins", "wins", "gamesPlayed", "basicRoomId", "createdAt", "updatedAt"]
+    },
+    "UserFriend": {
+      "title": "UserFriend",
+      "description": "Friend relationship stored under user friends subcollection",
+      "type": "object",
+      "properties": {
+        "friendUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["friendUid", "createdAt"]
+    },
+    "UserReport": {
+      "title": "UserReport",
+      "description": "User abuse and conduct report submitted to admin",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reporterId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reporterName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "reportedId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reportedName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 300
+        },
+        "reportedMessageText": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 240
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "resolved", "dismissed"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAtMs": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "reporterId", "reporterName", "reportedId", "reportedName", "reason", "description", "status", "createdAt", "createdAtMs"]
+    },
+    "UserPrivateAccount": {
+      "title": "UserPrivateAccount",
+      "description": "Isolated PII document containing Google email and photoURL",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 180
+        },
+        "photoURL": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "photoURL", "updatedAt"]
+    },
+    "CoinTransaction": {
+      "title": "CoinTransaction",
+      "description": "Store purchase or room upgrade ledger entry owned by the user",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["store_purchase", "room_upgrade", "gift_sent"]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "coinsDelta": {
+          "type": "number"
+        },
+        "priceEgp": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "kind", "label", "coinsDelta", "priceEgp", "createdAt"]
+    },
+    "VoiceRoom": {
+      "title": "VoiceRoom",
+      "description": "Persistent voice and party game room (free 6-hour or permanent basic 8-level room)",
+      "type": "object",
+      "properties": {
+        "roomId": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 24,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["free", "basic"]
+        },
+        "xp": {
+          "type": "number"
+        },
+        "level": {
+          "type": "number"
+        },
+        "backgroundIndex": {
+          "type": "number"
+        },
+        "activeGame": {
+          "type": "string",
+          "enum": ["ludo", "snakes", "bank", "jackaroo", "draw", "racing", "spy", "trivia"]
+        },
+        "expiresAtMs": {
+          "type": "number"
+        },
+        "isLocked": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "roomId",
+        "ownerId",
+        "ownerName",
+        "title",
+        "tier",
+        "xp",
+        "level",
+        "backgroundIndex",
+        "activeGame",
+        "expiresAtMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "VoiceRoomStaff": {
+      "title": "VoiceRoomStaff",
+      "description": "Assigned moderator or co-host for a specific voice room",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "role": {
+          "type": "string",
+          "enum": ["moderator", "cohost"]
+        },
+        "assignedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "name", "role", "assignedBy", "createdAt"]
+    },
+    "RechargeRequest": {
+      "title": "RechargeRequest",
+      "description": "User coin top-up request via Vodafone Cash or InstaPay awaiting admin review",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "userEmail": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 180
+        },
+        "packageId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "coins": {
+          "type": "number"
+        },
+        "priceEgp": {
+          "type": "number"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["vodafone_cash", "instapay"]
+        },
+        "targetNumber": {
+          "type": "string",
+          "enum": ["01044581972", "01228823207"]
+        },
+        "senderInfo": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 80
+        },
+        "receiptImage": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 250000
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "adminNote": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "reviewedBy": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 180
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "requestId",
+        "userId",
+        "userName",
+        "userEmail",
+        "packageId",
+        "coins",
+        "priceEgp",
+        "paymentMethod",
+        "targetNumber",
+        "senderInfo",
+        "receiptImage",
+        "status",
+        "adminNote",
+        "reviewedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Support, complaint, or suggestion ticket identified by a unique 6-10 digit number and username",
+      "type": "object",
+      "properties": {
+        "ticketNumber": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 10,
+          "pattern": "^[1-9][0-9]{5,9}$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "username": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "category": {
+          "type": "string",
+          "enum": ["support", "complaint", "suggestion"]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "enum": ["open", "replied", "closed"]
+        },
+        "lastMessageText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "lastSenderRole": {
+          "type": "string",
+          "enum": ["user", "admin"]
+        },
+        "createdAtMs": {
+          "type": "number"
+        },
+        "updatedAtMs": {
+          "type": "number"
+        },
+        "closedAtMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ticketNumber",
+        "userId",
+        "userName",
+        "username",
+        "category",
+        "subject",
+        "status",
+        "lastMessageText",
+        "lastSenderRole",
+        "createdAtMs",
+        "updatedAtMs",
+        "closedAtMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SupportMessage": {
+      "title": "SupportMessage",
+      "description": "Message inside a support ticket thread",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ticketNumber": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 10,
+          "pattern": "^[1-9][0-9]{5,9}$"
+        },
+        "ticketUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderRole": {
+          "type": "string",
+          "enum": ["user", "admin"]
+        },
+        "senderName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "senderUsername": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "createdAtMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "ticketNumber",
+        "ticketUserId",
+        "senderId",
+        "senderRole",
+        "senderName",
+        "senderUsername",
+        "text",
+        "createdAtMs",
+        "createdAt"
+      ]
+    },
+    "DirectChat": {
+      "title": "DirectChat",
+      "description": "Private 1-on-1 chat thread metadata between two friends",
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 260,
+          "pattern": "^[a-zA-Z0-9_\\-]+__[a-zA-Z0-9_\\-]+$"
+        },
+        "participantA": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "participantB": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "participantAName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "participantBName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "lastMessageText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "lastSenderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "updatedAtMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "chatId",
+        "participantA",
+        "participantB",
+        "participantAName",
+        "participantBName",
+        "lastMessageText",
+        "lastSenderId",
+        "updatedAtMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "DirectChatMessage": {
+      "title": "DirectChatMessage",
+      "description": "Direct message sent between two friends inside a direct chat thread",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "chatId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 260,
+          "pattern": "^[a-zA-Z0-9_\\-]+__[a-zA-Z0-9_\\-]+$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "receiverId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "createdAtMs": {
+          "type": "number"
+        },
+        "readAtMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "chatId",
+        "senderId",
+        "receiverId",
+        "senderName",
+        "text",
+        "createdAtMs",
+        "createdAt"
+      ]
+    },
+    "FriendRequest": {
+      "title": "FriendRequest",
+      "description": "Friend request and mutual friendship state between two users",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 260,
+          "pattern": "^[a-zA-Z0-9_\\-]+__[a-zA-Z0-9_\\-]+$"
+        },
+        "fromUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "toUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "fromName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "fromUsername": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "fromAvatar": {
+          "type": "string",
+          "enum": ["falcon", "panda", "fox", "cat", "astronaut", "knight", "chef", "wizard"]
+        },
+        "toName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "toUsername": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "toAvatar": {
+          "type": "string",
+          "enum": ["falcon", "panda", "fox", "cat", "astronaut", "knight", "chef", "wizard"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "accepted", "rejected"]
+        },
+        "createdAtMs": {
+          "type": "number"
+        },
+        "updatedAtMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "requestId",
+        "fromUid",
+        "toUid",
+        "fromName",
+        "fromUsername",
+        "fromAvatar",
+        "toName",
+        "toUsername",
+        "toAvatar",
+        "status",
+        "createdAtMs",
+        "updatedAtMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User game profile, coin balance, and permanent basic room ID"
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivateAccount" },
+      "description": "Isolated PII document storing Google email and photoURL"
+    },
+    "/users/{userId}/transactions/{txId}": {
+      "schema": { "$ref": "#/entities/CoinTransaction" },
+      "description": "User store purchases and coin ledger entries"
+    },
+    "/users/{userId}/friends/{friendId}": {
+      "schema": { "$ref": "#/entities/UserFriend" },
+      "description": "User friend list relationships"
+    },
+    "/voiceRooms/{roomId}": {
+      "schema": { "$ref": "#/entities/VoiceRoom" },
+      "description": "Voice rooms owned by users (free temporary or basic permanent leveled rooms)"
+    },
+    "/voiceRooms/{roomId}/staff/{staffUid}": {
+      "schema": { "$ref": "#/entities/VoiceRoomStaff" },
+      "description": "Moderators and co-hosts assigned to a voice room"
+    },
+    "/rechargeRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/RechargeRequest" },
+      "description": "Vodafone Cash and InstaPay coin recharge requests reviewed by admin"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/UserReport" },
+      "description": "User behavior reports submitted for administrator review"
+    },
+    "/supportTickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "Support, complaints, and suggestions tickets keyed by random 6-10 digit ticket number"
+    },
+    "/supportTickets/{ticketId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/SupportMessage" },
+      "description": "Conversation messages belonging to a support ticket"
+    },
+    "/directChats/{chatId}": {
+      "schema": { "$ref": "#/entities/DirectChat" },
+      "description": "Private 1-on-1 friend direct chat threads"
+    },
+    "/directChats/{chatId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/DirectChatMessage" },
+      "description": "Messages inside private 1-on-1 friend direct chats"
+    },
+    "/friendRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/FriendRequest" },
+      "description": "Friend requests and mutual accepted friendships between two users"
+    }
+  }
+}

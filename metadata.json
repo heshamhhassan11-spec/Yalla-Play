@@ -1,0 +1,6 @@
+{
+  "name": "YallaPlay - غرف الألعاب والدردشة الجماعية",
+  "description": "منصة ألعاب جماعية وغرف صوتية تفاعلية مستوحاة من وي بلاي: مين الجاسوس، ارسم وخمن، لودو، وتحدي المعلومات مباشرة مع أصدقائك.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

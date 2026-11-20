@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-sans: 'Cairo', 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-display: 'Cairo', 'Outfit', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #F4F6FB;
+    background-image:
+      radial-gradient(at 85% 0%, rgba(37, 99, 235, 0.055) 0px, transparent 48%),
+      radial-gradient(at 10% 90%, rgba(13, 148, 136, 0.045) 0px, transparent 48%);
+    background-attachment: fixed;
+    color: #141824;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  html.dark body {
+    background-color: #080C15;
+    background-image:
+      radial-gradient(at 85% 0%, rgba(37, 99, 235, 0.11) 0px, transparent 48%),
+      radial-gradient(at 10% 90%, rgba(217, 119, 6, 0.07) 0px, transparent 48%);
+    color: #F1F5F9;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  .font-mono-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Clean custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
+}
+
+@keyframes floatUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.85);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1.05);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-22px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-38px) scale(0.95);
+  }
+}
+
+.animate-float-reaction {
+  animation: floatUpFade 2.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.992);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-stage-enter {
+  animation: stageEnter 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes voiceEq {
+  0%, 100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.voice-eq-bar {
+  transform-origin: bottom;
+  animation: voiceEq 540ms ease-in-out infinite;
+}
+
+.voice-eq-bar-delay-1 {
+  animation-delay: 120ms;
+}
+
+.voice-eq-bar-delay-2 {
+  animation-delay: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-reaction,
+  .animate-stage-enter,
+  .voice-eq-bar {
+    animation: none;
+  }
+}
